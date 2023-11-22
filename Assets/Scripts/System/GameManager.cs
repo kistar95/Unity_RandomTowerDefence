@@ -80,6 +80,8 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        Application.targetFrameRate = 60;
     }
 
     private void Start()
