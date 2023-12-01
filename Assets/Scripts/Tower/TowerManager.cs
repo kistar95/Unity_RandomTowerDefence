@@ -76,7 +76,7 @@ public class TowerManager : MonoBehaviour
         {
             return;
         }
-
+#if UNITY_EDITOR
         if (onTowerSpawnButton)
         {
             ray = mainCam.ScreenPointToRay(Input.mousePosition);
@@ -105,6 +105,70 @@ public class TowerManager : MonoBehaviour
                     onTowerSpawnButton = false;
                     Destroy(spawnWhetherTileClone);
                     Debug.Log("그곳에는 설치할 수 없습니다.");
+                }
+            }
+        }
+        else if (!onTowerSpawnButton)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                ray = mainCam.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    if (hit.transform.CompareTag("Tower"))
+                    {
+                        currentSelectedTower = hit.transform.GetComponent<Tower>();
+                        towerInfoViewer.OnPanel(currentSelectedTower);
+                        OnSelectedTowerEffect(currentSelectedTower.transform);
+                    }
+                    else
+                    {
+                        currentSelectedTower = null;
+                        towerInfoViewer.OffPanel();
+                        OffSelectedTowerEffect();
+                    }
+                }
+            }
+        }
+#endif
+#if UNITY_ANDROID
+        TowerInteractionInMobile();
+#endif
+        
+    }
+
+    public void TowerInteractionInMobile()
+    {
+        if (onTowerSpawnButton)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                ray = mainCam.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("Field")))
+                {
+                    if (hit.transform.CompareTag("Field"))
+                    {
+                        TowerField towerField = hit.transform.GetComponent<TowerField>();
+                        spawnWhetherTile.SetUp(towerField);
+                        spawnWhetherTileClone.transform.position = hit.transform.position + (Vector3.up * 1.05f);
+                    }
+                }
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (hit.transform == null)
+                {
+                    onTowerSpawnButton = false;
+                    Destroy(spawnWhetherTileClone);
+                    Debug.Log("그곳에는 설치할 수 없습니다.");
+                }
+                else
+                {
+                    SpawnTower(hit.transform);
+                    onTowerSpawnButton = false;
+                    Destroy(spawnWhetherTileClone);
                 }
             }
         }

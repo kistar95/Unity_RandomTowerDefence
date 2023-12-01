@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour
     public int MarksmanTowerUpgradeLevel { get; set; } = 0;
 
     [HideInInspector] public UnityEvent GameOverEvent;
+    [HideInInspector] public UnityEvent GameClearEvent;
     [HideInInspector] public UnityEvent PauseGameEvent;
     [HideInInspector] public UnityEvent ResumGameEvent;
     [HideInInspector] public UnityEvent RestartGameEvent;
@@ -82,6 +83,8 @@ public class GameManager : MonoBehaviour
         }
 
         Application.targetFrameRate = 60;
+
+        PauseGameEvent.AddListener(Test);
     }
 
     private void Start()
@@ -114,6 +117,11 @@ public class GameManager : MonoBehaviour
     public void KillCounting()
     {
         enemyKillCount++;
+    }
+
+    private void Test()
+    {
+        Debug.Log("Test");
     }
 
     public void PauseGame()
@@ -149,6 +157,11 @@ public class GameManager : MonoBehaviour
             GameOverEvent.Invoke();
             isGameOver = true;
         }
+    }
+
+    public void GameClear()
+    {
+        GameClearEvent.Invoke();
     }
 
     private void ResetGameData()
